@@ -10,44 +10,27 @@ const app = express();
 // Middleware
 app.use(express.json());
 
-// CORS Configuration
+// CORS Configuration - Temporarily permissive for debugging
+console.log('CORS - Configuring with permissive settings for debugging');
+
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    // Development origins
-    const devOrigins = [
-      'http://localhost:5174',
-      'http://localhost:3000'
-    ];
-    
-    // Production origins - allow Vercel preview and production URLs
-    const vercelUrl = process.env.VERCEL_URL || '';
-    const prodOrigins = [
-      `https://${vercelUrl}`,
-      `https://${vercelUrl.replace('https://', '')}`,
-      `https://${vercelUrl.replace('https://', 'www.')}`,
-      `https://${vercelUrl.split('.')[0]}-git-main-${process.env.VERCEL_GIT_REPO_OWNER}.vercel.app`,
-      `https://${process.env.VERCEL_GIT_REPO_SLUG}-${process.env.VERCEL_GIT_COMMIT_REF}.vercel.app`
-    ].filter(Boolean);
-    
-    const allowedOrigins = process.env.NODE_ENV === 'production' 
-      ? [...new Set([...devOrigins, ...prodOrigins])]
-      : ['*'];
-    
-    if (allowedOrigins.includes('*') || allowedOrigins.some(o => origin.startsWith(o))) {
-      callback(null, true);
-    } else {
-      console.log('CORS blocked for origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
+  origin: '*', // Allow all origins for now
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
-  exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar']
+  credentials: true,
+  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
 };
+
+// Log all incoming requests for debugging
+app.use((req, res, next) => {
+  console.log('Incoming request:', {
+    method: req.method,
+    path: req.path,
+    origin: req.headers.origin,
+    'user-agent': req.headers['user-agent']
+  });
+  next();
+});
 
 // Enable CORS for all routes
 app.use(cors(corsOptions));
