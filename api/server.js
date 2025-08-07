@@ -16,13 +16,24 @@ connectDB();
 
 // Middleware
 app.use(express.json());
+const allowedOrigins = [
+  'http://localhost:5174',
+  'http://localhost:3000',
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL.replace('https://', '')}` : ''
+].filter(Boolean);
+
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-vercel-app.vercel.app', 'https://*.vercel.app']
-    : 'http://localhost:5174',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with']
 };
 
 app.use(cors(corsOptions));
@@ -34,6 +45,8 @@ app.use('/api/users', userRoutes);
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
+  // Set static folder
+  app.use(express.static(path.join(__dirname, '../client/dist')));
   // Set static folder
   app.use(express.static(path.join(__dirname, '../client/build')));
 

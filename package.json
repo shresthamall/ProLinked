@@ -1,0 +1,19 @@
+{
+  "name": "prolinked",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd api && npm run dev",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "build": "cd client && npm install && npm run build && cd ../api && npm install",
+    "start": "node api/server.js",
+    "vercel-build": "npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
