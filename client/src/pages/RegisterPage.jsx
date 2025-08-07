@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 import {
   Box,
   Button,
   TextField,
   Typography,
   Paper,
-  CircularProgress,
   Alert,
   Link,
 } from '@mui/material';
@@ -38,7 +38,13 @@ const RegisterPage = () => {
   };
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      sx={{ width: '100%', flexGrow: 1, mt: -10 }}
+    >
+      {loading && <LoadingSpinner />}
       <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 400 }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Create an Account
@@ -125,7 +131,7 @@ const RegisterPage = () => {
             disabled={loading}
             sx={{ mt: 3, mb: 2 }}
           >
-            {loading ? <CircularProgress size={24} /> : 'Create Account'}
+            Create Account
           </Button>
           <Typography variant="body2" align="center">
             Already have an account?{' '}

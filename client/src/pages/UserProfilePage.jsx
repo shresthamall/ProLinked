@@ -3,13 +3,13 @@ import { useParams } from 'react-router-dom';
 import api from '../services/api';
 import PostCard from '../components/PostCard';
 import EditProfileModal from '../components/EditProfileModal';
+import LoadingSpinner from '../components/LoadingSpinner';
 import {
   Container,
   Box,
   Typography,
   Avatar,
   Button,
-  CircularProgress,
   Alert,
   Paper,
   Grid,
@@ -49,11 +49,7 @@ const UserProfilePage = ({ userId: propUserId, isOwnProfile = false }) => {
   }, [userId]);
 
   if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <LoadingSpinner />;
   }
 
   if (error || !user) {

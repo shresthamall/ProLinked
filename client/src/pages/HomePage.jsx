@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
 import PostCard from '../components/PostCard';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { useAuth } from '../context/AuthContext';
 import {
   Container,
   Box,
   TextField,
   Button,
-  CircularProgress,
   Alert,
   Paper,
   Typography,
@@ -56,22 +56,7 @@ const HomePage = () => {
   };
 
   if (loading) {
-    return (
-      <Box sx={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: (theme) => theme.zIndex.drawer + 1,
-      }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <LoadingSpinner />;
   }
 
   if (error) {
@@ -105,7 +90,7 @@ const HomePage = () => {
               type="submit"
               variant="contained"
               disabled={isSubmitting || !newPostContent.trim()}
-              startIcon={isSubmitting ? <CircularProgress size={20} /> : null}
+              startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
             >
               {isSubmitting ? 'Posting...' : 'Post'}
             </Button>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField, Typography, Paper, CircularProgress, Alert } from '@mui/material';
+import { Box, Button, TextField, Typography, Paper, Alert } from '@mui/material';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -42,7 +43,13 @@ export default function LoginPage() {
   };
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      sx={{ width: '100%', flexGrow: 1, mt: -10 }}
+    >
+      {loading && <LoadingSpinner />}
       <Paper elevation={3} sx={{ p: 4, minWidth: 320 }}>
         <Typography variant="h5" mb={2}>Login</Typography>
         {formError && <Alert severity="error" sx={{ mb: 2 }}>{formError}</Alert>}
@@ -76,9 +83,8 @@ export default function LoginPage() {
             fullWidth
             sx={{ mt: 2 }}
             disabled={!!emailError || !email || !password || loading}
-            startIcon={loading ? <CircularProgress size={20} /> : null}
           >
-            {loading ? 'Logging in...' : 'Login'}
+            Login
           </Button>
         </form>
       </Paper>
