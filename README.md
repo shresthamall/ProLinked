@@ -66,8 +66,16 @@ Check out the live application: [https://pro-linked.vercel.app/](https://pro-lin
 You can use the following test credentials to explore the application:
 
 ```
-Email: test@example.com
-Password: test123
+Email: test@prolinked.com
+Password: test1234
+```
+```
+Email: shrestha@gmail.com
+Password: test1234
+```
+```
+Email: man@gmail.com
+Password: test1234
 ```
 
 Or create a new account to get started.
@@ -92,14 +100,10 @@ ProLinked/
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 📬 Contact
 
 For any questions or feedback, please open an issue on GitHub.
 
 ---
 
-Built with ❤️ by [Your Name]
+Built with ❤️ by Shrestha Mall
