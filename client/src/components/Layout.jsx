@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useThemeContext } from '../context/ThemeContext';
 import {
   AppBar,
   Toolbar,
@@ -8,15 +9,21 @@ import {
   Button,
   Container,
   Box,
+  IconButton,
+  useTheme,
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import LoginIcon from '@mui/icons-material/Login';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 
 const Layout = ({ children }) => {
   const { isAuthenticated, logout } = useAuth();
+  const { mode, toggleColorMode } = useThemeContext();
+  const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const hideOnRoutes = ['/login', '/register'];
@@ -27,7 +34,13 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'grey.100' }}>
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh',
+      bgcolor: 'background.default',
+      color: 'text.primary'
+    }}>
       <AppBar position="sticky" sx={{ bgcolor: 'background.paper', color: 'text.primary', boxShadow: 'none', borderBottom: '1px solid', borderColor: 'divider' }}>
         <Container maxWidth="lg">
           <Toolbar disableGutters>
@@ -44,7 +57,14 @@ const Layout = ({ children }) => {
             >
               ProLinked
             </Typography>
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <IconButton onClick={toggleColorMode} color="inherit">
+                {theme.palette.mode === 'dark' ? (
+                  <Brightness7Icon />
+                ) : (
+                  <Brightness4Icon />
+                )}
+              </IconButton>
               {!hideOnRoutes.includes(location.pathname) && (
                 <Button component={RouterLink} to="/" color="inherit" startIcon={<HomeIcon />}>
                   Home
