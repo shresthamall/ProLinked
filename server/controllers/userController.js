@@ -14,11 +14,13 @@ exports.getUser = async (req, res) => {
     
     res.json(user);
   } catch (err) {
-    console.error(err.message);
-    if (err.kind === 'ObjectId') {
+    if (err.kind === 'ObjectId' || err.name === 'CastError') {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.status(500).send('Server Error');
+    res.status(500).json({ 
+      message: 'Server error while processing your request',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 };
 
@@ -57,7 +59,9 @@ exports.updateProfile = async (req, res) => {
 
     res.json(user);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).json({ 
+      message: 'Failed to update profile',
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 };

@@ -36,8 +36,31 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+// Global error handlers
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Consider logging to an external service here
+});
+
 const PORT = process.env.PORT || 5001;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 });
+
+// Handle server errors
+export const closeServer = () => {
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
+};
+
+// Handle termination signals
+process.on('SIGTERM', closeServer);
+process.on('SIGINT', closeServer);

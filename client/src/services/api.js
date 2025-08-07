@@ -26,12 +26,28 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Handle unauthorized access
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+    // Handle network errors
+    if (!error.response) {
+      return Promise.reject({
+        message: 'Network error. Please check your connection and try again.'
+      });
     }
-    return Promise.reject(error);
+
+    // Handle 401 Unauthorized
+    if (error.response.status === 401) {
+      localStorage.removeItem('token');
+      // Only redirect if not already on the login page
+      if (!window.location.pathname.includes('/login')) {
+        window.location.href = '/login';
+      }
+    }
+
+    // Return a consistent error format
+    return Promise.reject({
+      message: error.response.data?.message || 'An unexpected error occurred',
+      status: error.response.status,
+      data: error.response.data
+    });
   }
 );
 
