@@ -4,18 +4,13 @@ const connectDB = require('./db');
 const path = require('path');
 require('dotenv').config();
 
-// Import routes
-const authRoutes = require('./routes/auth');
-const postRoutes = require('./routes/posts');
-const userRoutes = require('./routes/users');
-
+// Create Express app
 const app = express();
-
-// Connect to MongoDB
-connectDB();
 
 // Middleware
 app.use(express.json());
+
+// CORS Configuration
 const allowedOrigins = [
   'http://localhost:5174',
   'http://localhost:3000',
@@ -25,7 +20,7 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -38,22 +33,41 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Define Routes
+// Connect to MongoDB
+connectDB();
+
+// Import routes after DB connection is established
+const authRoutes = require('./routes/auth');
+const postRoutes = require('./routes/posts');
+const userRoutes = require('./routes/users');
+
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/users', userRoutes);
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
-  // Set static folder
   app.use(express.static(path.join(__dirname, '../client/dist')));
-  // Set static folder
-  app.use(express.static(path.join(__dirname, '../client/build')));
-
+  
+  // Handle client-side routing - return all requests to the app
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   });
 }
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: 'Something went wrong!',
+    error: process.env.NODE_ENV === 'production' ? {} : err.message
+  });
+});
+
+// Export the Express API for Vercel serverless functions
+module.exports = app;
 
 // Global error handlers
 process.on('uncaughtException', (error) => {
