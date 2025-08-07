@@ -67,14 +67,17 @@ You can use the following test credentials to explore the application:
 
 ```
 Email: test@prolinked.com
-Password: test1234
 ```
 ```
 Email: shrestha@gmail.com
-Password: test1234
 ```
 ```
 Email: man@gmail.com
+```
+
+The passwords for all the above is:
+
+```
 Password: test1234
 ```
 
