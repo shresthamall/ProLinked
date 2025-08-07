@@ -11,27 +11,47 @@ const app = express();
 app.use(express.json());
 
 // CORS Configuration
-const allowedOrigins = [
-  'http://localhost:5174',
-  'http://localhost:3000',
-  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
-  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL.replace('https://', '')}` : ''
-].filter(Boolean);
-
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Development origins
+    const devOrigins = [
+      'http://localhost:5174',
+      'http://localhost:3000'
+    ];
+    
+    // Production origins - allow Vercel preview and production URLs
+    const vercelUrl = process.env.VERCEL_URL || '';
+    const prodOrigins = [
+      `https://${vercelUrl}`,
+      `https://${vercelUrl.replace('https://', '')}`,
+      `https://${vercelUrl.replace('https://', 'www.')}`,
+      `https://${vercelUrl.split('.')[0]}-git-main-${process.env.VERCEL_GIT_REPO_OWNER}.vercel.app`,
+      `https://${process.env.VERCEL_GIT_REPO_SLUG}-${process.env.VERCEL_GIT_COMMIT_REF}.vercel.app`
+    ].filter(Boolean);
+    
+    const allowedOrigins = process.env.NODE_ENV === 'production' 
+      ? [...new Set([...devOrigins, ...prodOrigins])]
+      : ['*'];
+    
+    if (allowedOrigins.includes('*') || allowedOrigins.some(o => origin.startsWith(o))) {
       callback(null, true);
     } else {
+      console.log('CORS blocked for origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
+  exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar']
 };
 
+// Enable CORS for all routes
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Enable preflight for all routes
 
 // Connect to MongoDB
 connectDB();
